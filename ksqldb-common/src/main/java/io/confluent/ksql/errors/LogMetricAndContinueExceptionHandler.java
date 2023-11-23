@@ -49,9 +49,10 @@ public class LogMetricAndContinueExceptionHandler implements DeserializationExce
 
     if (isCausedByAuthorizationError(exception)) {
       log.info(
-          String.format("Authorization error when attempting to access the schema during deserialization. "
-              + "taskId: %s, topic: %s, partition: %d, offset: %d",
-          context.taskId(), record.topic(), record.partition(), record.offset()));
+          String.format(
+              "Authorization error when attempting to access the schema during deserialization. "
+                  + "taskId: %s, topic: %s, partition: %d, offset: %d",
+              context.taskId(), record.topic(), record.partition(), record.offset()));
       return DeserializationHandlerResponse.FAIL;
     }
 
