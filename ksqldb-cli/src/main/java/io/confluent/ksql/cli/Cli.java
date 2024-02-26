@@ -200,8 +200,8 @@ public class Cli implements KsqlRequestExecutor, Closeable {
     if (statements.isEmpty()) {
       return;
     }
-
-    printKsqlResponse(makeKsqlRequest(statements, restClient::makeKsqlRequest));
+    
+    checkKsqlResponse(makeKsqlRequest(statements, restClient::makeKsqlRequest));
   }
 
   private <R> RestResponse<R> makeKsqlRequest(
@@ -520,7 +520,7 @@ public class Cli implements KsqlRequestExecutor, Closeable {
     }
   }
 
-  private void printKsqlResponse(final RestResponse<KsqlEntityList> response) {
+  private void checkKsqlResponse(final RestResponse<KsqlEntityList> response) {
     if (response.isSuccessful()) {
       final KsqlEntityList ksqlEntities = response.getResponse();
       boolean noErrorFromServer = true;
@@ -541,6 +541,9 @@ public class Cli implements KsqlRequestExecutor, Closeable {
     } else {
       terminal.printErrorMessage(response.getErrorMessage());
     }
+    if (!noErrorFromServer) {
+      throw new KsqlRestException("REST request failed");
+    } 
   }
 
   private <C extends SqlBaseParser.StatementContext>
@@ -557,7 +560,7 @@ public class Cli implements KsqlRequestExecutor, Closeable {
 
   private <C extends SqlBaseParser.StatementContext>
       void handleConnectorRequest(final String statement, final C context) {
-    printKsqlResponse(makeKsqlRequest(statement, restClient::makeConnectorRequest));
+    checkKsqlResponse(makeKsqlRequest(statement, restClient::makeConnectorRequest));
   }
 
   @SuppressWarnings({"try", "unused"}) // ignored param is required to compile.
